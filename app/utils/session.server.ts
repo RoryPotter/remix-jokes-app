@@ -6,6 +6,12 @@ type LoginType = {
   username: string;
   password: string;
 };
+export async function register({ username, password }: LoginType) {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = await db.user.create({ data: { username, passwordHash } });
+
+  return user;
+}
 
 export async function login({ username, password }: LoginType) {
   let existingUser = await db.user.findFirst({ where: { username } });
@@ -73,4 +79,19 @@ export async function requireUserId(
     throw redirect(`/login?${params}`);
   }
   return userId;
+}
+
+export async function logout(request: Request) {
+  const session = await getUserSession(request);
+  return redirect(`/jokes`, {
+    headers: {
+      "Set-Cookie": await storage.destroySession(session),
+    },
+  });
+}
+
+export async function getUser(request: Request) {
+  const userId = await getUserId(request);
+  if (!userId) return null;
+  return db.user.findUnique({ where: { id: userId } });
 }
