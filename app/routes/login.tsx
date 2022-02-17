@@ -1,4 +1,4 @@
-import type { ActionFunction, LinksFunction } from "remix";
+import type { ActionFunction, LinksFunction, MetaFunction } from "remix";
 import { useActionData, json, Link, useSearchParams } from "remix";
 
 import { db } from "~/utils/db.server";
@@ -31,6 +31,13 @@ type ActionData = {
     loginType: string;
     username: string;
     password: string;
+  };
+};
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Remix Jokes | Login",
+    description: "Login to submit your own jokes to Remix Jokes!",
   };
 };
 
